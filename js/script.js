@@ -1,73 +1,63 @@
-/******************************************
-Treehouse Techdegree:
-FSJS project 2 - List Filter and Pagination
-******************************************/
-   
-// Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
-
-/*** 
-   Add your global variables that store the DOM elements you will 
-   need to reference and/or manipulate. 
-   
-   But be mindful of which variables should be global and which 
-   should be locally scoped to one of the two main functions you're 
-   going to create. A good general rule of thumb is if the variable 
-   will only be used inside of a function, then it can be locally 
-   scoped to that function.
-***/
-
+// Initial variables for page
 const listItems = document.getElementsByClassName('student-item cf');
 console.log(listItems);
 const pageNumber = 10;
-
-
-
-
-
-/*** 
-   Create the `showPage` function to hide all of the items in the 
-   list except for the ten you want to show.
-
-   Pro Tips: 
-     - Keep in mind that with a list of 54 students, the last page 
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when 
-       you initially define the function, and it acts as a variable 
-       or a placeholder to represent the actual function `argument` 
-       that will be passed into the parens later when you call or 
-       "invoke" the function 
-***/
-
-const showPage = (list,page) => {
-  let startIndex = page * 9;
-  let endIndex = page * 9;
-  for(let i = 0; i < list.length; i++){
-     if(i <= startIndex){
-        list[i].style.display = '';
-     } else if (i >= endIndex){
-        list[i].style.display='none';
-     }
-  }
+const page = document.querySelector('.page');
+// Function that decides which students to show
+const showPage = (list, page) => {
+   // startIndex decides which number student to start with 
+   let startIndex = (page * pageNumber) - pageNumber;
+   // endIndex decides the last student to show
+   let endIndex = page * pageNumber;
+   //  For loop that displays appropriate students on appropriate page
+   for (let i = 0; i < list.length; i++) {
+      if (i >= startIndex && i < endIndex) {
+         list[i].style.display = '';
+      } else {
+         list[i].style.display = 'none';
+      }
+   }
 }
-
-showPage(listItems,1);
-
-
-
-
-/*** 
-   Create the `appendPageLinks function` to generate, append, and add 
-   functionality to the pagination buttons.
-***/
-
-const appendPageLinks = () => {
-
+// Function that appends buttons dynamically based on how many students are in a given list
+const appendPageLinks = (list) => {
+   // First div grabs the first div we want to append our links to 
+   const firstDiv = document.getElementsByClassName('page')[0];
+   let pageLinks = Math.ceil(list.length / pageNumber);
+   // create needed elements for buttons
+   const div = document.createElement('div');
+   div.className = 'pagination';
+   const ul = document.createElement('ul');
+   //dynamically create our link elements depending on number of students
+   for (let i = 0; i < pageLinks; i++) {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.setAttribute("href", "#");
+      //sets the link numbers 
+      a.textContent = i + 1;
+      if (i === 0) {
+         a.className = 'active';
+      }
+      li.appendChild(a);
+      ul.appendChild(li);
+   }
+   div.appendChild(ul);
+   //append our new dynamically created div 
+   firstDiv.appendChild(div);
+   // attaches our event listeners to our pagelinks
+   let a = document.getElementsByTagName('a');
+   for (let i = 0; i < a.length; i++) {
+      a[i].addEventListener('click', (event) => {
+         let pageNumber = event.target.textContent;
+         for (let i = 0; i < a.length; i++) {
+            a[i].classList.remove('active');
+         }
+         event.target.className = 'active';
+         //call showPage function to show the items/page we have selected
+         showPage(listItems, pageNumber);
+      });
+   }
 };
+appendPageLinks(listItems);
+showPage(listItems, 1);
 
-
-
-
-
-// Remember to delete the comments that came with this file, and replace them with your own code comments.
